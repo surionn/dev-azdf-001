@@ -1,0 +1,39 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "datalake40007000_nsgflowlogs",
+						"type": "DatasetReference"
+					},
+					"name": "SourceNSGFlogLog"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "flattenLogs"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          records as (time as string, systemId as string, macAddress as string, category as string, resourceId as string, operationName as string, properties as (Version as integer, flows as (rule as string, flows as (mac as string, flowTuples as string[])[])[]))[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> SourceNSGFlogLog",
+				"SourceNSGFlogLog foldDown(unrollMultiple(records,records.properties.flows.flows.flowTuples),",
+				"     mapColumn(",
+				"          records,",
+				"          flowTuples = records.properties.flows.flows.flowTuples",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flattenLogs"
+			]
+		}
+	}
+}

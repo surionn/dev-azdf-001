@@ -1,0 +1,85 @@
+{
+	"name": "datalake40007000_nsgflowlogs",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_datalake200040",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "PT1H.json",
+				"fileSystem": "staging"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"records": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"time": {
+								"type": "string"
+							},
+							"systemId": {
+								"type": "string"
+							},
+							"macAddress": {
+								"type": "string"
+							},
+							"category": {
+								"type": "string"
+							},
+							"resourceId": {
+								"type": "string"
+							},
+							"operationName": {
+								"type": "string"
+							},
+							"properties": {
+								"type": "object",
+								"properties": {
+									"Version": {
+										"type": "integer"
+									},
+									"flows": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"rule": {
+													"type": "string"
+												},
+												"flows": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"mac": {
+																"type": "string"
+															},
+															"flowTuples": {
+																"type": "array",
+																"items": {
+																	"type": "string"
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

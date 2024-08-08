@@ -25,7 +25,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     documentForm: 'documentPerLine') ~> SourceNSGFlogLog",
+				"     documentForm: 'arrayOfDocuments') ~> SourceNSGFlogLog",
 				"SourceNSGFlogLog foldDown(unrollMultiple(records,records.properties.flows.flows.flowTuples),",
 				"     mapColumn(",
 				"          records,",

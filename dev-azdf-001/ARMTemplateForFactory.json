@@ -243,21 +243,94 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ls_datalake200040')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/datalake40007000_nsgflowlogs')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_datalake200040",
+					"type": "LinkedServiceReference"
+				},
 				"annotations": [],
-				"type": "AzureBlobFS",
+				"type": "Json",
 				"typeProperties": {
-					"url": "[parameters('ls_datalake200040_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('ls_datalake200040_accountKey')]"
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "PT1H.json",
+						"fileSystem": "staging"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"records": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"time": {
+										"type": "string"
+									},
+									"systemId": {
+										"type": "string"
+									},
+									"macAddress": {
+										"type": "string"
+									},
+									"category": {
+										"type": "string"
+									},
+									"resourceId": {
+										"type": "string"
+									},
+									"operationName": {
+										"type": "string"
+									},
+									"properties": {
+										"type": "object",
+										"properties": {
+											"Version": {
+												"type": "integer"
+											},
+											"flows": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"rule": {
+															"type": "string"
+														},
+														"flows": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"mac": {
+																		"type": "string"
+																	},
+																	"flowTuples": {
+																		"type": "array",
+																		"items": {
+																			"type": "string"
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_datalake200040')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ds_datalake_200040_ActivityLog_CSV')]",
@@ -333,28 +406,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ls_dataworkspace400040')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"server": "[parameters('ls_dataworkspace400040_properties_typeProperties_server')]",
-					"database": "[parameters('ls_dataworkspace400040_properties_typeProperties_database')]",
-					"encrypt": "mandatory",
-					"trustServerCertificate": false,
-					"authenticationType": "SQL",
-					"userName": "[parameters('ls_dataworkspace400040_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('ls_dataworkspace400040_password')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ds_dataworkspace400040_datapool_PoolActivityLog')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -418,6 +469,223 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_dataworkspace400040')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_dataworkspace40040_FlowTuples')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dataworkspace400040",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "RecordTime",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "RuleName",
+						"type": "varchar"
+					},
+					{
+						"name": "SourceIPAddress",
+						"type": "varchar"
+					},
+					{
+						"name": "DestinationIPAddress",
+						"type": "varchar"
+					},
+					{
+						"name": "SourcePort",
+						"type": "varchar"
+					},
+					{
+						"name": "Decision",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "FlowTuples"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_dataworkspace400040')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_datalake200040')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ls_datalake200040_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('ls_datalake200040_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_dataworkspace400040')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('ls_dataworkspace400040_properties_typeProperties_server')]",
+					"database": "[parameters('ls_dataworkspace400040_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('ls_dataworkspace400040_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_dataworkspace400040_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ScheduleTrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_01_CSV_Serverless",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 5,
+						"startTime": "2024-08-01T15:04:00",
+						"timeZone": "Mountain Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_01_CSV_Serverless')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "datalake40007000_nsgflowlogs",
+								"type": "DatasetReference"
+							},
+							"name": "SourceNSGFlogLog"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_dataworkspace40040_FlowTuples",
+								"type": "DatasetReference"
+							},
+							"name": "SinkFlowTuples"
+						}
+					],
+					"transformations": [
+						{
+							"name": "flattenLogs"
+						},
+						{
+							"name": "derivedColumnNSGFlow"
+						},
+						{
+							"name": "selectColumns"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          records as (time as string, systemId as string, macAddress as string, category as string, resourceId as string, operationName as string, properties as (Version as integer, flows as (rule as string, flows as (mac as string, flowTuples as string[])[])[]))[]",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'arrayOfDocuments') ~> SourceNSGFlogLog",
+						"SourceNSGFlogLog foldDown(unrollMultiple(records,records.properties.flows.flows.flowTuples),",
+						"     mapColumn(",
+						"          records,",
+						"          flowTuples = records.properties.flows.flows.flowTuples",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flattenLogs",
+						"flattenLogs derive(RecordTime = records.time,",
+						"          RuleName = records.properties.flows.rule,",
+						"          SourceIPAddress = split(flowTuples, \",\")[2],",
+						"          DestinationIPAddress = split(flowTuples, \",\")[3],",
+						"          SourcePort = split(flowTuples, \",\")[5],",
+						"          Decision = split(flowTuples, \",\")[8]) ~> derivedColumnNSGFlow",
+						"derivedColumnNSGFlow select(mapColumn(",
+						"          RecordTime,",
+						"          RuleName,",
+						"          SourceIPAddress,",
+						"          DestinationIPAddress,",
+						"          SourcePort,",
+						"          Decision",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectColumns",
+						"selectColumns sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          RecordTime as string,",
+						"          RuleName as string,",
+						"          SourceIPAddress as string,",
+						"          DestinationIPAddress as string,",
+						"          SourcePort as string,",
+						"          Decision as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          RecordTime,",
+						"          RuleName,",
+						"          SourceIPAddress,",
+						"          DestinationIPAddress,",
+						"          SourcePort,",
+						"          Decision",
+						"     )) ~> SinkFlowTuples"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/datalake40007000_nsgflowlogs')]",
+				"[concat(variables('factoryId'), '/datasets/ds_dataworkspace40040_FlowTuples')]"
 			]
 		}
 	]

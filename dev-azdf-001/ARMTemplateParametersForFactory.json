@@ -8,11 +8,17 @@
 		"ls_datalake200040_accountKey": {
 			"value": ""
 		},
+		"ls_datalake4000700_tonvmsa_accountKey": {
+			"value": ""
+		},
 		"ls_dataworkspace400040_password": {
 			"value": ""
 		},
 		"ls_datalake200040_properties_typeProperties_url": {
 			"value": "https://devdeltalakesa.dfs.core.windows.net/"
+		},
+		"ls_datalake4000700_tonvmsa_properties_typeProperties_url": {
+			"value": "https://tonvmsa.dfs.core.windows.net/"
 		},
 		"ls_dataworkspace400040_properties_typeProperties_server": {
 			"value": "metadevsqlserver.database.windows.net"

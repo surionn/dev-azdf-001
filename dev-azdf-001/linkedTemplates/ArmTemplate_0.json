@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_datalake200040'"
 		},
+		"ls_datalake4000700_tonvmsa_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_datalake4000700_tonvmsa'"
+		},
 		"ls_dataworkspace400040_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'ls_dataworkspace400040'"
@@ -18,6 +22,10 @@
 		"ls_datalake200040_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://devdeltalakesa.dfs.core.windows.net/"
+		},
+		"ls_datalake4000700_tonvmsa_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://tonvmsa.dfs.core.windows.net/"
 		},
 		"ls_dataworkspace400040_properties_typeProperties_server": {
 			"type": "string",
@@ -48,6 +56,23 @@
 					"accountKey": {
 						"type": "SecureString",
 						"value": "[parameters('ls_datalake200040_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_datalake4000700_tonvmsa')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ls_datalake4000700_tonvmsa_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('ls_datalake4000700_tonvmsa_accountKey')]"
 					}
 				}
 			},
@@ -163,6 +188,29 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_datalake200040')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_datalake4000700_insights')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_datalake4000700_tonvmsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "insights-logs-networksecuritygroupflowevent"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_datalake4000700_tonvmsa')]"
 			]
 		},
 		{
@@ -558,7 +606,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"name": "[concat(parameters('factoryName'), '/01_NSG_Flow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -600,7 +648,7 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false,",
-						"     documentForm: 'arrayOfDocuments') ~> SourceNSGFlogLog",
+						"     documentForm: 'documentPerLine') ~> SourceNSGFlogLog",
 						"SourceNSGFlogLog foldDown(unrollMultiple(records,records.properties.flows.flows.flowTuples),",
 						"     mapColumn(",
 						"          records,",
@@ -656,6 +704,117 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/datalake40007000_nsgflowlogs')]",
 				"[concat(variables('factoryId'), '/datasets/ds_dataworkspace40040_FlowTuples')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "01-Activity-CopyData",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "*",
+									"wildcardFileName": "*.json",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "MergeFiles"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_datalake4000700_insights",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "datalake40007000_nsgflowlogs",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "02-Activity-NSGFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "01-Activity-CopyData",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "01_NSG_Flow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SourceNSGFlogLog": {},
+									"SinkFlowTuples": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "None",
+							"cacheSinks": {
+								"firstRowOnly": true
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_datalake4000700_insights')]",
+				"[concat(variables('factoryId'), '/datasets/datalake40007000_nsgflowlogs')]",
+				"[concat(variables('factoryId'), '/dataflows/01_NSG_Flow')]"
 			]
 		},
 		{

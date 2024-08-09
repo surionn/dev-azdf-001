@@ -879,6 +879,37 @@
 				"[concat(variables('factoryId'), '/datasets/datalake40007000_nsgflowlogs')]",
 				"[concat(variables('factoryId'), '/datasets/ds_dataworkspace40040_FlowTuples')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TumblingWindow')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "pl_pipeline",
+						"type": "PipelineReference"
+					},
+					"parameters": {}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Hour",
+					"interval": 1,
+					"startTime": "2024-08-08T15:38:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_pipeline')]"
+			]
 		}
 	]
 }

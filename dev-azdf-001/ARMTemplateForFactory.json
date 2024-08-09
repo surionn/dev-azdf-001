@@ -375,7 +375,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "PT1H.json",
 						"fileSystem": "staging"
 					}
 				},

@@ -78,11 +78,7 @@
 						"type": "DataFlowReference"
 					},
 					"staging": {
-						"linkedService": {
-							"referenceName": "ls_datalake200040",
-							"type": "LinkedServiceReference"
-						},
-						"folderPath": "staging"
+						"folderPath": ""
 					},
 					"compute": {
 						"coreCount": 8,

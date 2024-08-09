@@ -1,0 +1,42 @@
+{
+	"name": "ds_dataworkspace40040_FlowTuples",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dataworkspace400040",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "RecordTime",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "RuleName",
+				"type": "varchar"
+			},
+			{
+				"name": "SourceIPAddress",
+				"type": "varchar"
+			},
+			{
+				"name": "DestinationIPAddress",
+				"type": "varchar"
+			},
+			{
+				"name": "SourcePort",
+				"type": "varchar"
+			},
+			{
+				"name": "Decision",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FlowTuples"
+		}
+	}
+}

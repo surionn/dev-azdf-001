@@ -77,9 +77,6 @@
 						"referenceName": "01_NSG_Flow",
 						"type": "DataFlowReference"
 					},
-					"staging": {
-						"folderPath": ""
-					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
@@ -87,6 +84,39 @@
 					"traceLevel": "None",
 					"cacheSinks": {
 						"firstRowOnly": true
+					}
+				}
+			},
+			{
+				"name": "DeleteFile",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "02-Activity-NSGFlow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "datalake40007000_nsgflowlogs",
+						"type": "DatasetReference"
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"wildcardFileName": "*.*",
+						"enablePartitionDiscovery": false
 					}
 				}
 			}

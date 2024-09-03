@@ -1,0 +1,28 @@
+{
+	"name": "01-Databricks",
+	"properties": {
+		"activities": [
+			{
+				"name": "01-Notebook",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/UdemyDP203/DP203_Lab221_AutomatedJob"
+				},
+				"linkedServiceName": {
+					"referenceName": "databricks1000",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": []
+	}
+}

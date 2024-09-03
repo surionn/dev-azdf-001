@@ -1,0 +1,13 @@
+{
+	"name": "databricks1000",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "https://adb-1632743365432133.13.azuredatabricks.net",
+			"authentication": "MSI",
+			"workspaceResourceId": "/subscriptions/b1798e03-3720-4c48-866c-89ede798689a/resourceGroups/devrg/providers/Microsoft.Databricks/workspaces/hathor-dev",
+			"existingClusterId": "0902-195503-rgp4huzy"
+		}
+	}
+}
